@@ -15,7 +15,7 @@ function phase_space(w, par, ch)
     M1 = mch[1][2]
     kcm1 = kcm(w, mch[1]...)
     if ch == :ch11
-        psp = 1 / (4π) * M1 * mch[1][2] / s * kcm(w, mch[1]...) / kcm1
+        psp = 1 / (4π) * M1 * mch[1][2] / s * (kcm(w, mch[1]...) / kcm1)
     elseif ch == :ch12
         psp = 1 / (4π) * M1 * mch[2][2] / s * kcm(w, mch[2]...) / kcm1
         

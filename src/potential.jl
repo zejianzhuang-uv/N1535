@@ -26,7 +26,7 @@ function WT(w, par, lec; n=2)
     return -1 / (4f^2) * v
 end
 
-function vnlo_swave(w, par, D::Matrix, L::Matrix; n=2)
+function vnlo_swave(w, par, D, L; n=2)
     f = par[:decons]
     mch = par[:mch]
     v = zeros(ComplexF64, n, n)
@@ -83,9 +83,9 @@ function lec_bi(par, b::Tuple)
     return vcat(bb'...) #hcat(bb...)
 end
 =#
-function lec_bi(par, b::Tuple)
+function lec_bi(par, b)
     (mπp, mπ0, mπm, mKbar0, mKm) = par[:meson_mass]
-    (b0, bD, bF) = b
+    (b0, bD, bF) = b .* 1e-3
     mu1(mK, mπ) = sqrt(mK^2 + mπ^2)
     #mu2 = sqrt(5mK^2 - 3mπ^2)
     bb = [
@@ -104,8 +104,8 @@ function lec_bi(par, b::Tuple)
     return vcat(bb'...) #hcat(bb...)
 end
 
-function lec_di(d::Tuple)
-    (d1, d2, d3, d4) = d
+function lec_di(d)
+    (d1, d2, d3, d4) = d .* 1e-3
     lec = [
         [2d2+d3+2d4, -d1+d2+d3, (-d1-d2+2d3)/2, d1+d2+d3, -2d2+d3, -sqrt(3)*(d1+d2) / 2],
 
@@ -125,7 +125,7 @@ end
 
 function Dmat(par, b)
     (mπ, mK) = par[:meson_mass]
-    (b0, bD, bF) = b
+    (b0, bD, bF) = b .* 1e-3
     μ1 = sqrt(mK^2 + mπ^2)
     μ2 = sqrt(5mK^2 - 3mπ^2)
     μ3 = sqrt(4mK^2 - mπ^2)
@@ -153,7 +153,7 @@ function Dmat(par, b)
 end
 
 function Lmat(d)
-    d1, d2, d3, d4 = d#d[:d1], d[:d2], d[:d3], d[:d4]
+    d1, d2, d3, d4 = d .* 1e-3#d[:d1], d[:d2], d[:d3], d[:d4]
 
     L11 = -4d2 + 4d3 + 2d4
     L12 = sqrt(3 / 2) * (d1 + d2 - 2d3)
