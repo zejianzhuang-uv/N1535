@@ -182,6 +182,11 @@ function Lmat(d)
 end
 
 function C_mat()
-    return [4 -sqrt(3/2);
-            -sqrt(3/2) 3]
+    c = [
+        [4, -sqrt(3/2), 0, sqrt(3/2)],
+        [-sqrt(3/2), 3, 3/sqrt(2), 0],
+        [0, 3/sqrt(2), 0, -3/sqrt(2)],
+        [sqrt(3/2), 0, -3/sqrt(2), 3]
+    ]
+    return hcat(c...)
 end
