@@ -1,13 +1,14 @@
 
 
 include("formula.jl")
-
+include("LECs_charged_basis.jl")
 
 """ Potential up to next to leading order (S-wave) """
 function V_up_to_nlo_swave(w, par, C, D, L; n=2)
     wt = WT(w, par, C, n=n)
     vnlo = vnlo_swave(w, par, D, L, n=n)
-    return wt + vnlo
+    vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+    return wt + vnlo + vb
 end
 
 function WT(w, par, lec; n=2)
@@ -45,6 +46,56 @@ function vnlo_swave(w, par, D, L; n=2)
         end
     end
     return v * 1/f^2
+end
+
+function Born_s(w::Any, params::Dict; n=2)
+    f = params[:decons]
+    mch = params[:mch]
+    mB = params[:mB]
+    v = zeros(ComplexF64, n, n)
+    for i in 1:n
+        for j in 1:n
+            Ni = norm_factor(w, mch[i])
+            Nj = norm_factor(w, mch[j])
+            Mi = mch[i][2]
+            Mj = mch[j][2]
+            v[i, j] = Ni *Nj *(w - Mi) *(w - Mj) * sum([LECs_cBorn_s(i, j)[k] / (w + mB[k]) for k in 1:6])
+        end
+    end
+    return v * (1. /(12e0f^2) )
+end
+
+function Born_u(w::Any, params::Dict; n=2)
+    f = params[:decons]
+    mch = params[:mch]
+    mB = params[:mB]
+    s = w*w
+    v = zeros(ComplexF64, n, n)
+    for i in 1:n
+        for j in 1:n
+            Ni = norm_factor(w, mch[i] )
+            Nj = norm_factor(w, mch[j] )
+            Ei = baryon_energy(w, mch[i] )
+            Ej = baryon_energy(w, mch[j] )
+            mi, Mi = mch[i]
+            mj, Mj = mch[j]
+            qi = (qcm(w, mch[i]...) )
+            qj = (qcm(w, mch[j]...) )
+
+
+            # v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0*(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
+            #     log((s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) ) ) * LECs_Born_u(i, j)[k] for k in 1:n]) * Ni * Nj
+            
+            if w > min(mi+Mi, mj+Mj) && w < max(mi + Mi, mj + Mj)
+                v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
+                (-2e0 *(s - mi^2 - mj^2 -mB[k]^2)/abs(s - mi^2 - mj^2 -mB[k]^2)*atan(abs(2e0qi*qj/(s - mi^2 - mj^2 -mB[k]^2)) ) ) ) * LECs_cBorn_u(i, j)[k] for k in 1:6]) * Ni * Nj
+            else
+                v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
+                log((s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) ) ) * LECs_cBorn_u(i, j)[k] for k in 1:6]) * Ni * Nj
+            end
+        end
+    end
+    return (-1. / (12e0f^2)) * v
 end
 
 function norm_factor(w, mchi)

@@ -27,7 +27,8 @@ function par_physical_channel()
         :mch => mch,
         :decons => fϕ,
         :threshold => [sum(mch[i]) for i in 1:6],
-        :meson_mass => (mπp, mπ0, mπm, mKbar0, mKm)
+        :meson_mass => (mπp, mπ0, mπm, mKbar0, mKm),
+        :mB => [mp, mn, mΛ, mΣm, mΣ0, mΣp]
         )
     return pp
 end
