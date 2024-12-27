@@ -118,7 +118,7 @@ function LECs_cBorn_u(i::Int64, j::Int64)
         nothing
 
     elseif (i, j) == (2, 4) || (i, j) == (4, 2)
-        l[1] = sqrt(6.)*(D + F) * sqrt(6.) * (D + F)
+        l[1] = sqrt(6.)*(D + F) * sqrt(6.) * (D - F)
 
     elseif (i, j) == (2, 5) || (i, j) == (5, 2)
         l[3] = (2e0D)^2
