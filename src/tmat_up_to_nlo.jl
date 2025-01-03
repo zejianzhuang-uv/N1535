@@ -42,9 +42,10 @@ end
 
 function tmat_up_to_nlo_swave(w, par, C, D, L, a; mu=630e0, n=6, ch=:ch11)
     id = Matrix{Float64}(I, n, n)
-    wt = WT(w, par, C, n=6)
-    vnlo = vnlo_swave(w, par, D, L, n=6)
-    v = wt + vnlo
+    # wt = WT(w, par, C, n=6)
+    # vnlo = vnlo_swave(w, par, D, L, n=6)
+    v = V_up_to_nlo_swave(w, par, C, D, L, n=6)
+    # v = wt + vnlo
     gl = Gdr_mat(w, par, a, mu=mu)
     t = inv(id - v * gl) * v
 

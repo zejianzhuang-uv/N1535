@@ -8,7 +8,7 @@ function LECs_cBorn_s(i::Int64, j::Int64)
     D, F = 0.8, 0.46
     if (i, j) == (1, 1)
         l[3] = (-D -3e0F)^2
-        l[5] = (sqrt(3.)*(D-F))^2
+        l[5] = (sqrt(3.)*(D-F) )^2
 
     elseif (i, j) == (1, 2) || (i, j) == (2, 1)
         l[3] = (-D - 3e0F) *(2e0D)
@@ -79,8 +79,8 @@ function LECs_cBorn_s(i::Int64, j::Int64)
         l[5] = (-sqrt(3)*(D -F) ) * 2e0D
     
     elseif (i, j) == (5, 6) || (i, j) == (6, 5)
-        l[3] = 2e0D^2
-        l[5] = (2e0sqrt(3)F)^2
+        l[3] = (2e0D) * 0
+        l[5] = (2e0sqrt(3)F) * 2e0D
 
     elseif (i, j) == (6, 6)
         l[3] = 0

@@ -65,7 +65,21 @@ function Born_s(w::Any, params::Dict; n=2)
     return v * (1. /(12e0f^2) )
 end
 
+function FFF1(s, mi, mj, Ei, Ej, qi, qj, mB)
+    EPS = 8.
+    if abs((s + mB^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj)) <= 1e-8
+        s = (sqrt(s) - EPS)^2
+        return log((s + mB^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) )
+    else
+        return log((s + mB^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) )
+    end
+    
+end
+
 function Born_u(w::Any, params::Dict; n=2)
+    # println("The U channel")
+    LECs_Born = LECs_cBorn_u
+    EPS = 1e-7
     f = params[:decons]
     mch = params[:mch]
     mB = params[:mB]
@@ -82,17 +96,9 @@ function Born_u(w::Any, params::Dict; n=2)
             qi = (qcm(w, mch[i]...) )
             qj = (qcm(w, mch[j]...) )
 
-
-            # v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0*(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
-            #     log((s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) ) ) * LECs_Born_u(i, j)[k] for k in 1:n]) * Ni * Nj
-            
-            if w > min(mi+Mi, mj+Mj) && w < max(mi + Mi, mj + Mj)
-                v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
-                (-2e0 *(s - mi^2 - mj^2 -mB[k]^2)/abs(s - mi^2 - mj^2 -mB[k]^2)*atan(abs(2e0qi*qj/(s - mi^2 - mj^2 -mB[k]^2)) ) ) ) * LECs_cBorn_u(i, j)[k] for k in 1:6]) * Ni * Nj
-            else
-                v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
-                log((s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej - 2e0qi*qj) / (s + mB[k]^2 - mi^2 -mj^2 -2e0Ei*Ej + 2e0*qi*qj) ) ) * LECs_cBorn_u(i, j)[k] for k in 1:6]) * Ni * Nj
-            end
+            v[i, j] = sum([(w + mB[k] - (Mi + mB[k])*(Mj + mB[k])*(w + Mi + Mj - mB[k]) /(2e0*(Mi + Ei)*(Mj + Ej)) + (Mi + mB[k])*(Mj + mB[k]) /(4e0*qi*qj+EPS) *((w - Mi - Mj + mB[k]) - (s + mB[k]^2 -mi^2 -mj^2 -2e0Ei*Ej) /(2e0*(Mi + Ei)*(Mj + Ej)) *(w + Mi + Mj - mB[k])) * 
+            FFF1(s, mi, mj, Ei, Ej, qi, qj, mB[k]) ) * LECs_Born(i, j)[k] for k in 1:6]) * Ni * Nj
+        
         end
     end
     return (-1. / (12e0f^2)) * v
