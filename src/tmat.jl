@@ -64,9 +64,9 @@ function plot_tdet_lo_degenrate(ax, rew, imw, par, C, a; rs=:rs21, mu=630.0f0)
     return cf
 end
 
-function tmat_lo(w, par, C, a; mu=630e0, n=6, ch=:ch11)
+function tmat_lo(w, par, C, a; mu=630e0, n=6, ch=:ch11, born=true)
     id = diagm(ones(n))
-    wt = V_lo(w, par, C, n=6)
+    wt = V_lo(w, par, C, n=6, born=born)
     gl = Gdr_mat(w, par, a, mu=mu)
     t = inv(id - wt * gl) * wt
     if ch == :ch11
@@ -87,9 +87,9 @@ end
 
 
 
-function dist_lo(w, par, C, a, ch)
+function dist_lo(w, par, C, a, ch; born=true)
     hbarc_sq = 0.389379372e6 # MEV × mb
-    t = tmat_lo(w, par, C, a, ch=ch)
+    t = tmat_lo(w, par, C, a, ch=ch, born=born)
     psp = phase_space(w, par, ch)
     return psp * abs2(t) * hbarc_sq
 end

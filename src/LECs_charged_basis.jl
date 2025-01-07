@@ -152,5 +152,4 @@ function LECs_cBorn_u(i::Int64, j::Int64)
         l[5] = (2e0D)^2
         return l
     end
-    
 end

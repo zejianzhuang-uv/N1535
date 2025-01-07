@@ -12,9 +12,10 @@ include("phase_space.jl")
 function tdet_up_to_nlo_degen(w, par, C, D, L, a; mu=630e0, rs=:rs21, n=2)
     id = Matrix{Float64}(I, n, n)
     wt = WT(w, par, C, n=n)
+    vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
     vnlo = vnlo_swave(w, par, D, L, n=n)
     gl = Gdr_mat_degenerate(w, par, a, mu=mu, rs=rs, n=n)
-    v = wt + vnlo
+    v = wt + vnlo + vb
     return det(id - v * gl)
 end
 
@@ -40,11 +41,11 @@ function plot_tdet_up_to_nlo_degen(ax, rew, imw, par, C, D, L, a; rs=:rs21, mu=6
 end
 
 
-function tmat_up_to_nlo_swave(w, par, C, D, L, a; mu=630e0, n=6, ch=:ch11)
+function tmat_up_to_nlo_swave(w, par, C, D, L, a; mu=630e0, n=6, ch=:ch11, born=true)
     id = Matrix{Float64}(I, n, n)
     # wt = WT(w, par, C, n=6)
     # vnlo = vnlo_swave(w, par, D, L, n=6)
-    v = V_up_to_nlo_swave(w, par, C, D, L, n=6)
+    v = V_up_to_nlo_swave(w, par, C, D, L, n=6, born = born)
     # v = wt + vnlo
     gl = Gdr_mat(w, par, a, mu=mu)
     t = inv(id - v * gl) * v
@@ -64,9 +65,40 @@ function tmat_up_to_nlo_swave(w, par, C, D, L, a; mu=630e0, n=6, ch=:ch11)
     end
 end
 
-function dist_up_to_nlo_swave(w, par, C, D, L, a, ch)
+function dist_up_to_nlo_swave(w, par, C, D, L, a, ch; born=true)
     hbarc_sq = 0.389379372e6 # MEV × mb
-    t = tmat_up_to_nlo_swave(w, par, C, D, L, a, ch=ch)
+    t = tmat_up_to_nlo_swave(w, par, C, D, L, a, ch=ch, born=born)
+    psp = phase_space(w, par, ch)
+    return psp * abs2(t) * hbarc_sq
+end
+
+function tmat_up_to_nlo_swave2(w, par, D, L, a; mu=630e0, n=6, ch=:ch11)
+    id = Matrix{Float64}(I, n, n)
+    # wt = WT(w, par, C, n=6)
+    v = vnlo_swave(w, par, D, L, n=6)
+    # v = V_up_to_nlo_swave(w, par, C, D, L, n=6, born = born)
+    # v = wt + vnlo
+    gl = Gdr_mat(w, par, a, mu=mu)
+    t = inv(id - v * gl) * v
+
+    if ch == :ch11
+        return t[1, 1]
+    elseif ch == :ch12
+        return t[1, 2]
+    elseif ch == :ch13
+        return t[1, 3]
+    elseif ch == :ch14
+        return t[1, 4]
+    elseif ch == :ch15
+        return t[1, 5]
+    elseif ch == :ch16
+        return t[1, 6]
+    end
+end
+
+function dist_up_to_nlo_swave2(w, par, D, L, a, ch)
+    hbarc_sq = 0.389379372e6 # MEV × mb
+    t = tmat_up_to_nlo_swave2(w, par, D, L, a, ch=ch)
     psp = phase_space(w, par, ch)
     return psp * abs2(t) * hbarc_sq
 end

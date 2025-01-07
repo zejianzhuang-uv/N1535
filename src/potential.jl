@@ -4,15 +4,23 @@ include("formula.jl")
 include("LECs_charged_basis.jl")
 
 """ Potential up to next to leading order (S-wave) """
-function V_up_to_nlo_swave(w, par, C, D, L; n=2)
+function V_up_to_nlo_swave(w, par, C, D, L; n=2, born=true)
     wt = WT(w, par, C, n=n)
     vnlo = vnlo_swave(w, par, D, L, n=n)
-    vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+    if born == true
+        vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+    else
+        vb = zeros(n, n)
+    end
     return wt + vnlo + vb
 end
 
-function V_lo(w, par, lec; n=2)
-    vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+function V_lo(w, par, lec; n=2, born=true)
+    if born == true
+        vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+    else
+        vb = zeros(n, n)
+    end
     wt = WT(w, par, lec, n=n)
     return vb + wt
 end
