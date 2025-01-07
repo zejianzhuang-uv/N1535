@@ -66,7 +66,7 @@ end
 
 function tmat_lo(w, par, C, a; mu=630e0, n=6, ch=:ch11)
     id = diagm(ones(n))
-    wt = WT(w, par, C, n=6)
+    wt = V_lo(w, par, C, n=6)
     gl = Gdr_mat(w, par, a, mu=mu)
     t = inv(id - wt * gl) * wt
     if ch == :ch11

@@ -11,7 +11,14 @@ function V_up_to_nlo_swave(w, par, C, D, L; n=2)
     return wt + vnlo + vb
 end
 
+function V_lo(w, par, lec; n=2)
+    vb = Born_s(w, par, n=n) + Born_u(w, par, n=n)
+    wt = WT(w, par, lec, n=n)
+    return vb + wt
+end
+
 function WT(w, par, lec; n=2)
+    
     #lec = lec_lo()
     f = par[:decons]
     mch = par[:mch]
@@ -24,7 +31,7 @@ function WT(w, par, lec; n=2)
         end
     end
     
-    return -1 / (4f^2) * v
+    return -1 / (4f^2) * v 
 end
 
 function vnlo_swave(w, par, D, L; n=2)
